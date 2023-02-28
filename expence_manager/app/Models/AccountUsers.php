@@ -5,14 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Account extends Model
+class AccountUsers extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'account_name',
-        'account_number',
-        'is_default',
-        'user_id',
+        'first_name',
+        'last_name',
+        'email',
+        'account_id',
     ];
 }

@@ -24,8 +24,8 @@ class User extends Authenticatable
         'phone',
         'password',
         'role',
-        'account_name',
-        'account_number',
+        'is_onboarded',
+        'verification_token',
     ];
 
     /**

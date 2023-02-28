@@ -19,18 +19,14 @@ class UserFactory extends Factory
      */
     public function definition()
     {
-        $first_name = fake()->firstName();
-        $last_name = fake()->lastName();
         return [
-            'first_name' => $first_name,
-            'last_name' => $last_name,
+            'first_name' => fake()->firstName(),
+            'last_name' => fake()->lastName(),
             'email' => fake()->unique()->safeEmail(),
-            'phone' => fake()->unique()->numerify('##########'),
+            'phone' => fake()->unique()->regexify('[6-9]{1}[0-9]{9}'),
             'email_verified_at' => now(),
             'password' => Hash::make('password'),
-            'role' => 'User',
-            'account_name' => $first_name . " " . $last_name,
-            'account_number' => fake()->unique()->numerify('############'),
+            'role' => 'Admin',
             'remember_token' => Str::random(10),
         ];
     }

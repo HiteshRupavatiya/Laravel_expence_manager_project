@@ -22,10 +22,11 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->enum('role',['Admin','User'])->default('User');
-            $table->string('account_name');
-            $table->bigInteger('account_number')->unique();
+            $table->boolean('is_onboarded')->default(false);
+            $table->string('verification_token')->default(null);
             $table->rememberToken();
             $table->timestamps();
+            $table->softDeletes('deleted_at');
         });
     }
 
