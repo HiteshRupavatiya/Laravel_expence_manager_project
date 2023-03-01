@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Jobs\SendVerifyEmailJob;
 use App\Jobs\SendWelcomeEmailJob;
+use App\Mail\ResetPassword;
 use App\Mail\VerifyEmail;
 use App\Models\Account;
 use App\Models\User;
@@ -75,9 +76,12 @@ class UserController extends Controller
             ], 401);
         }
 
+        $user = User::where('email', $request->email)->first();
+
         return response()->json([
             'status'   => true,
-            'message'  => 'Logged In Successfully'
+            'message'  => 'Logged In Successfully',
+            'token' => $user->createToken("API TOKEN")->plainTextToken,
         ], 200);
     }
 
@@ -100,13 +104,54 @@ class UserController extends Controller
             ]);
             
             return response()->json([
-                'message' => 'User Email Verified Successfully',now()
+                'message' => 'User Email Verified Successfully',
             ], 200);
         }
         else{
             return response()->json([
                 'message' => 'Invalid Token',
             ], 401);
+        }
+    }
+
+    public function forgot_password(Request $request){
+        $validateData = Validator::make($request->all(), [
+            'email' => 'required|email',
+        ]);
+
+        if($validateData->fails()){
+            return response()->json([
+                'message' => 'Validation Error', 
+                'Error'   => $validateData->errors()
+            ], 205);
+        }
+
+        $user = User::where('email', '=', $request->email)->first();
+
+        if($user){
+            Mail::to($user->email)->send(new ResetPassword($user));
+        }
+        else{
+            return response()->json([
+                'message' => 'Invalid Email Address'
+            ]);
+        }
+    }
+
+    public function reset_password(Request $request){
+        $validateData = Validator::make($request->all(), [
+            'password' => 'required|min:8|confirmed',
+            'password_confirmation' => 'required',
+            'token' => 'required',
+        ]);
+
+        $user = User::where('verification_token', '=', $request->token)->first();
+
+        if($user){
+            $user->update([
+                'password' => Hash::make($request->password),
+            ]);
+            return "password changed";
         }
     }
 }

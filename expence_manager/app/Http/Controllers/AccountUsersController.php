@@ -22,6 +22,7 @@ class AccountUsersController extends Controller
             'first_name' => 'required|min:5|alpha',
             'last_name'  => 'required|min:5|alpha',
             'email'      => 'required|email|unique:account_users',
+            'account_id' => 'required|exists:accounts,id'
         ]);
 
         if($validateAccountUser->fails()){
@@ -35,7 +36,7 @@ class AccountUsersController extends Controller
             'first_name' => $request->first_name,
             'last_name'  => $request->last_name,
             'email'      => $request->email,
-            'account_id' => 8,
+            'account_id' => $request->account_id,
         ]);
 
         return response()->json([

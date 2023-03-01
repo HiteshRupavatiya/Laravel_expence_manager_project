@@ -19,9 +19,11 @@ class TransactionController extends Controller
 
     public function add_transaction(Request $request){
         $validateTransaction = Validator::make($request->all(), [
-            'type'     => 'required|alpha',
-            'category' => 'required|alpha|min:3',
-            'amount'   => 'required|numeric|min:1',
+            'type'            => 'required|alpha',
+            'category'        => 'required|alpha|min:3',
+            'amount'          => 'required|numeric|min:1',
+            'account_user_id' => 'required|exists:account_users,id',
+            'account_id'      => 'required|exists:accounts,id',
         ]);
 
         if($validateTransaction->fails()){

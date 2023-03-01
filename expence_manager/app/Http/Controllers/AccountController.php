@@ -21,6 +21,7 @@ class AccountController extends Controller
         $validateData = Validator::make($request->all(), [
             'account_name'   => 'required|alpha|min:5',
             'account_number' => 'required|unique:accounts,account_number|digits:12|numeric',
+            'user_id'        => 'required|exists:users,id'
         ]);
 
         if($validateData->fails()){
@@ -34,7 +35,7 @@ class AccountController extends Controller
             'account_name'   => $request->account_name,
             'account_number' => $request->account_number,
             'is_default'     => true,
-            'user_id'        => 4,
+            'user_id'        => $request->user_id,
         ]);
 
         return response()->json([
