@@ -20,14 +20,15 @@ class UserFactory extends Factory
     public function definition()
     {
         return [
-            'first_name' => fake()->firstName(),
-            'last_name' => fake()->lastName(),
-            'email' => fake()->unique()->safeEmail(),
-            'phone' => fake()->unique()->regexify('[6-9]{1}[0-9]{9}'),
-            'email_verified_at' => now(),
-            'password' => Hash::make('password'),
-            'role' => 'Admin',
-            'remember_token' => Str::random(10),
+            'first_name'         => fake()->firstName(),
+            'last_name'          => fake()->lastName(),
+            'email'              => fake()->unique()->safeEmail(),
+            'phone'              => fake()->unique()->regexify('[6-9]{1}[0-9]{9}'),
+            'email_verified_at'  => null,
+            'password'           => Hash::make('password'),
+            'role'               => 'Admin',
+            'remember_token'     => Str::random(10),
+            'verification_token' => Str::random(64),
         ];
     }
 

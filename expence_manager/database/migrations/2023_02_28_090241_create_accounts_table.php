@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('account_name');
             $table->bigInteger('account_number')->unique();
             $table->boolean('is_default')->default(false);
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->timestamps();
             $table->softDeletes('deleted_at');
         });

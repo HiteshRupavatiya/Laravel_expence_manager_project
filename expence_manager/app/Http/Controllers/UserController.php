@@ -4,12 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Jobs\SendVerifyEmailJob;
 use App\Jobs\SendWelcomeEmailJob;
+use App\Mail\VerifyEmail;
 use App\Models\Account;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
@@ -43,14 +46,8 @@ class UserController extends Controller
         ]);
 
         dispatch(new SendWelcomeEmailJob($user));
-        dispatch(new SendVerifyEmailJob($user));
-
-        $account = Account::create([
-            'account_name'   => $user->first_name . " " . $user->last_name,
-            'account_number' => fake()->unique()->regexify('[1-9]{1}[0-9]{11}'),
-            'is_default'     => 1,
-            'user_id'        => $user->id,
-        ]);
+        // dispatch(new SendVerifyEmailJob($user));
+        Mail::to($request->email)->send(new VerifyEmail($user));
 
         return response()->json([
             'message' => 'User Registered Successfully',
@@ -65,7 +62,10 @@ class UserController extends Controller
         ]);
 
         if($validateUser->fails()){
-            return $validateUser->errors();
+            return response()->json([
+                'message' => 'Validation Error', 
+                'Error'   => $validateUser->errors()
+            ], 205);
         }
 
         if(!Auth::attempt($request->only('email','password'))){
@@ -82,7 +82,7 @@ class UserController extends Controller
     }
 
     public function logout(){
-        Session::flush();
+        session()->flush();
         Auth::logout();
         return response()->json([
             'status'  => true,
@@ -90,7 +90,23 @@ class UserController extends Controller
         ], 200);
     }
 
-    public function varifyUser($token){
-        return $token;
+    public function verify_user($token){
+        $verify_user = User::where('verification_token', '=', $token)->first();
+        if($verify_user){
+            $verify_user->update([
+                'is_onboarded'       => true,
+                'email_verified_at'  => now(),
+                'verification_token' => '',
+            ]);
+            
+            return response()->json([
+                'message' => 'User Email Verified Successfully',now()
+            ], 200);
+        }
+        else{
+            return response()->json([
+                'message' => 'Invalid Token',
+            ], 401);
+        }
     }
 }

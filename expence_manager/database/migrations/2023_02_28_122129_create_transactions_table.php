@@ -18,8 +18,8 @@ return new class extends Migration
             $table->enum('type',['Income','Expence']);
             $table->string('category');
             $table->integer('amount');
-            $table->foreignId('account_user_id')->constrained('account_users')->onDelete('cascade')->onUpdate('cascade');
-            $table->foreignId('account_id')->constrained('accounts')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreignId('account_user_id')->constrained('account_users')->onDelete('cascade');
+            $table->foreignId('account_id')->constrained('accounts')->onDelete('cascade');
             $table->timestamps();
         });
     }
