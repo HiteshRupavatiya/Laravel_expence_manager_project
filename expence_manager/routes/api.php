@@ -31,7 +31,7 @@ Route::post('/logout', [UserController::class, 'logout']);
 
 Route::get('/verifyAccount/{token}', [UserController::class, 'verify_user']);
 
-Route::group(['middleware'=>['auth:sanctum']], function () {
+Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('/account', [AccountController::class, 'add_account']);
     Route::get('/account', [AccountController::class, 'show_all_accounts']);
     Route::get('/account/{id}', [AccountController::class, 'show_account']);
@@ -39,7 +39,7 @@ Route::group(['middleware'=>['auth:sanctum']], function () {
     Route::delete('/account/{id}', [AccountController::class, 'destroy_account']);
 });
 
-Route::group(['middleware'=>['auth:sanctum']], function () {
+Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('/account_user', [AccountUsersController::class, 'add_account_user']);
     Route::get('/account_user', [AccountUsersController::class, 'show_all_account_user']);
     Route::get('/account_user/{id}', [AccountUsersController::class, 'show_account_user']);
@@ -47,7 +47,7 @@ Route::group(['middleware'=>['auth:sanctum']], function () {
     Route::delete('/account_user/{id}', [AccountUsersController::class, 'destroy_account_user']);
 });
 
-Route::group(['middleware'=>['auth:sanctum']], function () {
+Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('/transaction', [TransactionController::class, 'add_transaction']);
     Route::get('/transaction', [TransactionController::class, 'show_all_transaction']);
     Route::get('/transaction/{id}', [TransactionController::class, 'show_transaction']);
@@ -55,6 +55,8 @@ Route::group(['middleware'=>['auth:sanctum']], function () {
     Route::delete('/transaction/{id}', [TransactionController::class, 'destroy_transaction']);
 });
 
-Route::post('/forgot_password',[UserController::class,'forgot_password']);
+Route::post('/forgot_password', [UserController::class, 'forgot_password']);
 
-Route::post('/reset_password',[UserController::class,'reset_password']);
+Route::post('/reset_password', [UserController::class, 'reset_password']);
+
+Route::get('/user_profile/{id}', [UserController::class, 'getUserProfile'])->middleware('auth:sanctum');

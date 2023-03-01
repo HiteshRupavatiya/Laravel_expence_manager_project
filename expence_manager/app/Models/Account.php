@@ -15,4 +15,8 @@ class Account extends Model
         'is_default',
         'user_id',
     ];
+
+    public function user(){
+        return $this->belongsTo(User::class);
+    }
 }

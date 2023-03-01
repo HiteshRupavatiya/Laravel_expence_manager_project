@@ -151,7 +151,19 @@ class UserController extends Controller
             $user->update([
                 'password' => Hash::make($request->password),
             ]);
-            return "password changed";
+            return response()->json([
+                'message' => 'Password Changed Successfully'
+            ]);
         }
+    }
+
+    public function getUserProfile($id){
+        $user = User::find($id);
+        $accounts = User::find($id)->accounts;
+        return response()->json([
+            'message'         => 'User Details Fetched Successfully',
+            'user'            => $user,
+            'account_details' => $accounts,
+        ]);
     }
 }
