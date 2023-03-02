@@ -15,4 +15,19 @@ class AccountUsers extends Model
         'email',
         'account_id',
     ];
+
+    public function user()
+    {
+        return $this->hasOneThrough(Account::class, User::class);
+    }
+
+    public function account()
+    {
+        return $this->belongsTo(Account::class);
+    }
+
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class);
+    }
 }

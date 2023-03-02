@@ -9,82 +9,77 @@ use Illuminate\Support\Facades\Validator;
 
 class TransactionController extends Controller
 {
-    public function show_all_transaction(){
+    public function list(){
         $transactions = Transaction::all();
         return response()->json([
-            'message'    => 'All Transactions Fetched Successfully',
-            'accounts'    => $transactions,
+            'status'        => true,
+            'message'       => 'All Transactions Fetched Successfully',
+            'transactions'  => $transactions,
         ], 201);
     }
 
-    public function add_transaction(Request $request){
+    public function create(Request $request){
         $validateTransaction = Validator::make($request->all(), [
-            'type'            => 'required|alpha',
-            'category'        => 'required|alpha|min:3',
+            'type'            => 'required|alpha|min:6|max:10',
+            'category'        => 'required|alpha|min:5|max:15',
             'amount'          => 'required|numeric|min:1',
-            'account_user_id' => 'required|exists:account_users,id',
-            'account_id'      => 'required|exists:accounts,id',
+            'account_user_id' => 'required|exists:account_users,id|numeric',
+            'account_id'      => 'required|exists:accounts,id|numeric',
         ]);
 
         if($validateTransaction->fails()){
             return response()->json([
-                'message' => 'Validation Error', 
-                'Error'   => $validateTransaction->errors()
+                'status'  => false,
+                'message' => 'Invalid Transaction Details', 
+                'errors'  => $validateTransaction->errors()
             ], 205);
         }
 
-        $transaction = Transaction::create([
-            'type'            => $request->type,
-            'category'        => $request->category,
-            'amount'          => $request->amount,
-            'account_user_id' => 3,
-            'account_id'      => 8,
-        ]);
+        $transaction = Transaction::create($request->only('type','category','amount','account_user_id','account_id'));
 
         return response()->json([
-            'message'      => 'Transaction Created Successfully',
+            'status'      => true,
+            'message'     => 'Transaction Created Successfully',
             'transaction' => $transaction,
         ], 201);
     }
 
-    public function show_transaction($id){
+    public function get($id){
         $transaction = Transaction::findOrFail($id);
         return response()->json([
+            'status'        => true,
             'message'       => 'Transaction Fetched Successfully',
-            'account_user'  => $transaction,
+            'transaction'  => $transaction,
         ], 201);
     }
 
-    public function edit_transaction(Request $request, $id){
+    public function update(Request $request, $id){
         $validateTransaction = Validator::make($request->all(), [
-            'type'     => 'required|alpha',
-            'category' => 'required|alpha|min:3',
+            'type'     => 'required|alpha|min:6|max:10',
+            'category' => 'required|alpha|min:5|max:15',
             'amount'   => 'required|numeric|min:1',
         ]);
 
         if($validateTransaction->fails()){
             return response()->json([
-                'message' => 'Validation Error', 
-                'Error'   => $validateTransaction->errors()
+                'status'  => false,
+                'message' => 'Invalid Transaction Details', 
+                'errors'  => $validateTransaction->errors()
             ], 205);
         }
 
-        $transaction = Transaction::findOrFail($id);
-
-        DB::table('transactions')->where('id', '=', $id)->update([
-            'type'     => $request->type,
-            'category' => $request->category,
-            'amount'   => $request->amount,
-        ]);
+        $transaction = Transaction::findOrFail($id)->update($request->only('type','category','amount'));
 
         return response()->json([
+            'status'  => true,
             'message' => 'Transaction Updated Successfully',
         ], 201);
     }
 
-    public function destroy_transaction($id){
+    public function delete($id){
         Transaction::findOrFail($id)->delete();
         return response()->json([
+            'status'  => true,
             'message' => 'Transaction Deleted Successfully',
         ], 201);
     }

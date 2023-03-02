@@ -9,78 +9,81 @@ use Illuminate\Support\Facades\Validator;
 
 class AccountController extends Controller
 {
-    public function show_all_accounts(){
+    public function list(){
         $accounts = Account::all();
         return response()->json([
-            'message'    => 'All Accounts Fetched Successfully',
-            'accounts'    => $accounts,
+            'status'   => true,  
+            'message'  => 'All Accounts Fetched Successfully',
+            'accounts' => $accounts,
         ], 201);
     }
 
-    public function add_account(Request $request){
-        $validateData = Validator::make($request->all(), [
-            'account_name'   => 'required|alpha|min:5',
+    public function create(Request $request){
+        $validateAccount = Validator::make($request->all(), [
+            'account_name'   => 'required|alpha|min:5|max:15',
             'account_number' => 'required|unique:accounts,account_number|digits:12|numeric',
             'user_id'        => 'required|exists:users,id'
         ]);
 
-        if($validateData->fails()){
+        if($validateAccount->fails()){
             return response()->json([
-                'message' => 'Validation Error', 
-                'Error'   => $validateData->errors()
+                'status'  => false,
+                'message' => 'Invalid Account Details', 
+                'errors'  => $validateAccount->errors()
             ], 205);
         }
 
-        $account = Account::create([
-            'account_name'   => $request->account_name,
-            'account_number' => $request->account_number,
-            'is_default'     => true,
-            'user_id'        => $request->user_id,
-        ]);
+        $account = Account::create($request->only('account_name','account_number','user_id') +
+            [
+                'is_default' => true,
+            ]
+        );
 
         return response()->json([
+            'status'  => true,
             'message' => 'Account Created Successfully',
-            'account'    => $account,
+            'account' => $account,
         ], 201);
     }
 
-    public function show_account($id){
+    public function get($id){
         $account = Account::findOrFail($id);
         return response()->json([
-            'message'    => 'Account Fetched Successfully',
-            'account'    => $account,
+            'status'   => true,
+            'message'  => 'Account Fetched Successfully',
+            'account'  => $account,
         ], 201);
     }
 
-    public function edit_account(Request $request, $id){
+    public function update(Request $request, $id){
         $validateAccountData = Validator::make($request->all(), [
-            'account_name'   => 'required|alpha|min:5',
-            'account_number' => 'required|unique:accounts,account_number|digits:12|numeric',
+            'account_name'   => 'required|alpha|min:5|max:15',
+            'account_number' => 'required|numeric|digits:12|unique:accounts,account_number',
         ]);
 
         if($validateAccountData->fails()){
             return response()->json([
-                'message' => 'Validation Error', 
-                'Error'   => $validateAccountData->errors()
+                'status'  => false,
+                'message' => 'Invalid Account Details', 
+                'errors'  => $validateAccountData->errors()
             ], 205);
         }
 
         $account = Account::findOrFail($id);
 
-        DB::table('accounts')->where('id', '=', $id)->update([
-            'account_name'   => $request->account_name,
-            'account_number' => $request->account_number,
-        ]);
+        $account->update($request->only('account_name','account_number'));
 
         return response()->json([
+            'status'  => true,
             'message' => 'Account Updated Successfully',
         ], 201);
     }
 
-    public function destroy_account($id){
+    public function delete($id){
         Account::findOrFail($id)->delete();
         return response()->json([
-            'message'    => 'Account Deleted Successfully',
+            'status'  => true,
+            'message' => 'Account Deleted Successfully',
         ], 201);
     }
 }

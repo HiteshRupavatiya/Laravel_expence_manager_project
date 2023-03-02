@@ -12,7 +12,7 @@
 
 <p>We just need to verify your email address before you can access our site.<br><br>
 
-Verify your email address <a href="{{URL('api/verifyAccount/'.$user->verification_token)}}">Verify Email</a>
+Verify your email address <a href="{{URL('api/user/verifyAccount/'.$user->verification_token)}}">Verify Email</a>
 </p>
 
 Thanks!
