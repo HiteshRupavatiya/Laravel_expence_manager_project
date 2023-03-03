@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
@@ -130,8 +131,6 @@ class AuthController extends Controller
             ], 205);
         }
 
-        $user = User::where('email', $request->email)->get();
-
         $token = Str::random(64);
 
         PasswordReset::create(
@@ -143,22 +142,18 @@ class AuthController extends Controller
                 ]
         );
 
-        Mail::to($user->email)->send(new ResetPassword($user, $token));
+        Mail::to($request->email)->send(new ResetPassword($token));
         return response()->json([
             'status'  => true,
             'message' => 'Email Sent To Your Mail Id',
-        ], 205);
-        // return response()->json([
-        //     'status'  => false,
-        //     'message' => 'Email Address Does Not Exists'
-        // ], 205);
+        ], 200);
     }
 
     public function resetPassword(Request $request)
     {
         $validateData = Validator::make($request->all(), [
             'email'                 => 'required|exists:users,email',
-            'password'              => 'required|min:8|confirmed',
+            'password'              => 'required|min:8|max:20|confirmed',
             'password_confirmation' => 'required',
             'token'                 => 'required|exists:password_resets,token',
         ]);
@@ -171,16 +166,31 @@ class AuthController extends Controller
             ], 205);
         }
 
-        $user = User::where('email', '=', $request->email)->first();
 
-        if ($user) {
-            $user->update([
-                'password' => Hash::make($request->password),
-            ]);
+
+        $hasData = PasswordReset::where('email', $request->email)->first();
+
+        $hasData->expired_at >= $hasData->created_at;
+
+        if ($hasData) {
+            $user = User::where('email', '=', $request->email)->first();
+            if ($user) {
+                $user->update([
+                    'password' => Hash::make($request->password),
+                ]);
+
+                PasswordReset::where('email', $request->email)->delete();
+
+                return response()->json([
+                    'status'  => true,
+                    'message' => 'Password Changed Successfully'
+                ]);
+            }
+        } else {
             return response()->json([
-                'status'  => true,
-                'message' => 'Password Changed Successfully'
-            ]);
+                'status'  => false,
+                'message' => 'Token Has Been expired',
+            ], 500);
         }
     }
 }

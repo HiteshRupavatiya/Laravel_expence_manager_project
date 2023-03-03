@@ -9,8 +9,6 @@
 </head>
 
 <body>
-    <h1>Hi {{ $user->first_name }} {{ $user->last_name }}</h1>
-
     Reset password code : {{$token}}
 </body>
 
