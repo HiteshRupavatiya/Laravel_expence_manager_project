@@ -74,9 +74,11 @@ class AccountUsersController extends Controller
         }
 
         $user_account = AccountUsers::findOrFail($id)->update(
-            'first_name',
-            'last_name',
-            'email'
+            [
+                'first_name',
+                'last_name',
+                'email'
+            ]
         );
 
         return response()->json([

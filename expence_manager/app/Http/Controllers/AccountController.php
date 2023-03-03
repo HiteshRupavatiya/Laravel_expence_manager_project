@@ -58,7 +58,6 @@ class AccountController extends Controller
     public function update(Request $request, $id){
         $validateAccountData = Validator::make($request->all(), [
             'account_name'   => 'required|alpha|min:5|max:15',
-            'account_number' => 'required|numeric|digits:12|unique:accounts,account_number',
         ]);
 
         if($validateAccountData->fails()){
@@ -71,7 +70,7 @@ class AccountController extends Controller
 
         $account = Account::findOrFail($id);
 
-        $account->update($request->only('account_name','account_number'));
+        $account->update($request->only('account_name'));
 
         return response()->json([
             'status'  => true,

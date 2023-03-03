@@ -18,7 +18,7 @@ class AccountUsers extends Model
 
     public function user()
     {
-        return $this->hasOneThrough(Account::class, User::class);
+        return $this->hasOneThrough(User::class, Account::class);
     }
 
     public function account()
