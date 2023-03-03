@@ -33,7 +33,7 @@ class AccountUsersController extends Controller
             ], 205);
         }
 
-        $userData = DB::table('users')->join('accounts', 'users.id', '=', 'accounts.user_id')->select('users.first_name', 'users.last_name')->first();
+        $userData = User::where('email', $request->email)->get();
     
         $user_account = AccountUsers::create($request->only('email','account_id') +
             [
