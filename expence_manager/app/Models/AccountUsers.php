@@ -28,6 +28,6 @@ class AccountUsers extends Model
 
     public function transactions()
     {
-        return $this->hasMany(Transaction::class);
+        return $this->hasMany(Transaction::class, 'account_user_id');
     }
 }

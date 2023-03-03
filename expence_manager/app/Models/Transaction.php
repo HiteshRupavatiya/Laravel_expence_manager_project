@@ -19,15 +19,16 @@ class Transaction extends Model
 
     public function user()
     {
-        return $this->hasManyThrough(User::class, Account::class);
+        return $this->hasOneThrough(User::class, Account::class, 'user_id', 'id');
     }
 
     public function account()
     {
-        return $this->hasOneThrough(Account::class, AccountUsers::class);
+        return $this->belongsTo(Account::class);
     }
 
-    public function account_user(){
+    public function accountUser()
+    {
         return $this->belongsTo(AccountUsers::class);
     }
 }

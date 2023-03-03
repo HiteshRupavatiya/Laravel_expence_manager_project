@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AccountUsersController;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
@@ -19,10 +20,11 @@ use Spatie\FlareClient\Api;
 |
 */
 
-Route::controller(UserController::class)->prefix('user')->group(function () {
-    Route::post('register', 'register');
-    Route::post('login', 'login');
-    Route::get('verifyAccount/{token}', 'verifyUser');
+Route::middleware('auth:sanctum')->group(function () {
+    Route::controller(UserController::class)->prefix('user')->group(function () {
+        Route::post('/changePassword', 'changePassword');
+        Route::get('/user-profile', 'getUserProfile');
+    });
 });
 
 Route::middleware('auth:sanctum')->group(function () {
@@ -51,12 +53,10 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 });
 
-Route::post('user/logout', [UserController::class, 'logout'])->middleware('auth:sanctum');
-
-Route::get('user/profile/{id}', [UserController::class, 'getUserProfile'])->middleware('auth:sanctum');
-
-Route::post('/forgotPassword', [UserController::class, 'forgotPassword']);
-
-Route::post('/resetPassword', [UserController::class, 'resetPassword']);
-
-Route::post('/changePassword', [UserController::class, 'changePassword'])->middleware('auth:sanctum');
+Route::controller(AuthController::class)->prefix('user')->group(function () {
+    Route::post('register', 'register');
+    Route::post('login', 'login');
+    Route::get('verifyAccount/{token}', 'verifyUser');
+    Route::post('forgotPassword', 'forgotPassword');
+    Route::post('resetPassword', 'resetPassword');
+});

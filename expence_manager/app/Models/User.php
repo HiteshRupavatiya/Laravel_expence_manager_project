@@ -56,7 +56,7 @@ class User extends Authenticatable
 
     public function account_users()
     {
-        return $this->hasManyThrough(AccountUsers::class, Account::class);
+        return $this->hasManyThrough(AccountUsers::class, Account::class, 'account_id', '');
     }
 
     public function transactions()
