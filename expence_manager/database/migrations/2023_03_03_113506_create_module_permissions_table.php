@@ -15,6 +15,12 @@ return new class extends Migration
     {
         Schema::create('module_permissions', function (Blueprint $table) {
             $table->id();
+            $table->boolean('add_access')->default(false);
+            $table->boolean('edit_access')->default(false);
+            $table->boolean('view_access')->default(false);
+            $table->boolean('delete_access')->default(false);
+            $table->foreignId('module_code')->constrained('modules')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreignId('permission_id')->constrained('permissions')->onDelete('cascade')->onUpdate('cascade');
             $table->timestamps();
         });
     }
